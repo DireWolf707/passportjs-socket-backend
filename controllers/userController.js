@@ -2,6 +2,7 @@ import catchAsync from "../utils/catchAsync.js"
 import AppError from "../utils/appError.js"
 import { isCloudinaryURL, uploadImage, deleteImage } from "../utils/cloudinary.js"
 import { User } from "../models/index.js"
+import slugify from "../utils/slugify.js"
 
 export const getProfile = (req, res) => {
   if (!req.user) return res.json({ status: "success" })
@@ -15,6 +16,9 @@ export const getProfile = (req, res) => {
 
 export const updateProfile = catchAsync(async (req, res, next) => {
   ;["email"].forEach((field) => delete req.body[field])
+  const username = req.body.username
+  if (username) req.body.username = slugify(username)
+
   await User.findByIdAndUpdate(req.user._id, req.body, { runValidators: true })
   res.status(200).json({ status: "success", data: "Profile Updated Successfully!" })
 })

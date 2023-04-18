@@ -1,6 +1,8 @@
 import passport from "passport"
 import { Strategy as GoogleStrategy } from "passport-google-oauth20"
 import { User } from "../../models/index.js"
+import randomString from "../../utils/randomString.js"
+import slugify from "../../utils/slugify.js"
 
 passport.use(
   new GoogleStrategy(
@@ -15,7 +17,7 @@ passport.use(
       try {
         let user
         user = await User.findOne({ email })
-        if (!user) user = await User.create({ email, avatar, name, username: name })
+        if (!user) user = await User.create({ email, avatar, name, username: slugify(`${name} ${randomString()}`) })
         cb(null, user)
       } catch (err) {
         cb(err, null)
